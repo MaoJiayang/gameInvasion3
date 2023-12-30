@@ -121,7 +121,7 @@ class MenuScene(Scene):
         self.render_map()
         #遍历所有精灵，渲染
         for sprite in self.all_sprites:
-            sprite.render(self.camera)
+            sprite.render(self.camera)#
         #print(self.camera.apply((0,0)))
         pygame.display.flip()
 
