@@ -521,8 +521,8 @@ class SurfaceCache(ComponentBase):
     为了避免空间无限的增加，缓存中存储的zoom和angle有粒度，并不是连续值。
     传入的zoom和angle会被转换为最接近的缓存值
     """
-    def __init__(self,zoom_granularity_factor: float = 0.0015,
-                 angle_granularity_factor: float = 0.002,
+    def __init__(self,zoom_granularity_factor: float = 0.003,
+                 angle_granularity_factor: float = 0.004,
                  zoom_range: tuple[float,float] = Constants.ZOOM_RANGE,
                  angle_range: tuple[float,float] = (0,360)):
         super().__init__()
@@ -540,11 +540,16 @@ class SurfaceCache(ComponentBase):
 
         if key not in self.cache:
             # 缩放和旋转图像
-            scaled_surface = pygame.transform.scale(original_surface, (int(original_surface.get_width() * adjusted_zoom), int(original_surface.get_height() * adjusted_zoom)))
-            rotated_surface = pygame.transform.rotate(scaled_surface, adjusted_angle)
-            self.cache[key] = rotated_surface
+            # scaled_surface = pygame.transform.scale(original_surface, (int(original_surface.get_width() * adjusted_zoom), int(original_surface.get_height() * adjusted_zoom)))
+            # rotated_surface = pygame.transform.rotate(scaled_surface, adjusted_angle)
+            # self.cache[key] = rotated_surface
+
+            processed_surface = pygame.transform.rotozoom(original_surface, adjusted_angle, adjusted_zoom)#这样处理比上面的方法质量更高耗时稍长
+            self.cache[key] = processed_surface
+            
 
         return self.cache[key]
+        # return pygame.transform.rotozoom(original_surface, adjusted_angle, adjusted_zoom)
     def update(self):
         super().update()
     def destroy(self):

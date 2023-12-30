@@ -26,6 +26,8 @@ class Scene(ABC):
         pygame.mixer.set_num_channels(64)
         self.space = pymunk.Space()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
+        #创建一个相机
+        self.camera = Camera(self.screen,initial_position=(Constants.SCREEN_WIDTH/2,Constants.SCREEN_HEIGHT/2))
         self.running = True
         self.clock = pygame.time.Clock()  # 添加Clock对象
         
@@ -40,7 +42,8 @@ class Scene(ABC):
             self.update()
             self.render()
             #TODO:在这里需要加入场景切换的逻辑
-            self.clock.tick_busy_loop(Constants.FPS)# 限制帧率
+            #self.clock.tick_busy_loop(Constants.FPS)# 限制帧率
+            self.clock.tick(Constants.FPS)# 限制帧率
         self.destroy()
 
     def event_dispatch(self):
@@ -71,13 +74,17 @@ class Scene(ABC):
         """
         pass
 
-    @abstractmethod
     def render(self):
         """
         Render the scene.
         """
-        pass
-
+        self.screen.fill((0,0,0))
+        #遍历所有精灵，渲染
+        for sprite in self.all_sprites:
+            sprite:GameObject
+            sprite.render(self.camera)
+        pygame.display.flip()
+        # pygame.display.update()
 class MenuScene(Scene):
     def __init__(self,title:str = 'Menu'):
         '''
@@ -89,10 +96,7 @@ class MenuScene(Scene):
         # 还可以在这里初始化资源管理器。用于提前加载一些资源，避免在游戏中加载时卡顿。
         pygame.display.set_caption(title)
         
-        #创建一个相机
-        self.camera = Camera(self.screen,initial_position=(Constants.SCREEN_WIDTH/2,Constants.SCREEN_HEIGHT/2))
-        #加载地图
-        self.load_map()
+
         #加载精灵
         self.load_spirites()
 
@@ -113,18 +117,6 @@ class MenuScene(Scene):
                 sprite.update(self.event_manager)
         self.camera.update()
 
-    def render(self):
-        # 渲染游戏对象
-        # 一般来说，渲染逻辑应该在游戏对象中实现，而不是在场景中实现。
-        # 但是，如果有一些特殊的渲染逻辑，比如切换场景，可以在这里实现。
-        self.screen.fill((0,0,0))
-        self.render_map()
-        #遍历所有精灵，渲染
-        for sprite in self.all_sprites:
-            sprite.render(self.camera)#
-        #print(self.camera.apply((0,0)))
-        pygame.display.flip()
-
     def destroy(self):
         # 销毁场景
         # 一些可以模块化的销毁，比如销毁地图，销毁游戏对象，可以在子类另写销毁方法并在这里调用。
@@ -133,10 +125,6 @@ class MenuScene(Scene):
         for sprite in self.all_sprites:
             sprite.destroy()
 
-    def load_map(self):
-        pass
-    def render_map(self):
-        pass
     def load_spirites(self):
         '''
         加载精灵
@@ -158,20 +146,16 @@ class GameScene(Scene):
         # 一些可以模块化的初始化，比如加载地图，初始化游戏对象，可以在子类另写初始化方法并在这里调用。
         # 还可以在这里初始化资源管理器。用于提前加载一些资源，避免在游戏中加载时卡顿。
         pygame.display.set_caption(title)
-        
-        #创建一个相机
-        self.camera = Camera(self.screen,initial_position=(Constants.SCREEN_WIDTH/2,Constants.SCREEN_HEIGHT/2))
-        #加载地图
-        self.load_map()
         #加载精灵
         self.load_spirites()
+        #加载地图
+        self.load_map()
         # 创建一个弱引用字典，用于存储场景中所有存在的 PhysicalGO 的 shape 和对象本身，用于碰撞检测
         self.shapes_go_dict = WeakValueDictionary()
         #向事件管理器注册自身的事件处理方法
         self.event_manager.subscribe(self,Constants.CREATE_GAME_OBJECT_EVENT)
 
         self.last_physics_update_time = self.clock.get_time()
-        self.font = pygame.font.SysFont('arial', 16)
 
     def update(self):
         # 更新游戏对象
@@ -209,24 +193,6 @@ class GameScene(Scene):
             self.space.step(Constants.DELTA_TIME)
         self.last_physics_update_time = pygame.time.get_ticks()
 
-    def render(self):
-        # 渲染游戏对象
-        # 一般来说，渲染逻辑应该在游戏对象中实现，而不是在场景中实现。
-        # 但是，如果有一些特殊的渲染逻辑，比如切换场景，可以在这里实现。
-        self.screen.fill((0,0,0))
-        self.render_map()
-        #遍历所有精灵，渲染
-        for sprite in self.all_sprites:
-            sprite.render(self.camera)
-        #print(self.camera.apply((0,0)))
-        keys = pygame.key.get_pressed()
-        #F1查看帧率
-        if keys[pygame.K_F1]:
-            #左上角显示帧率
-            fps = self.font.render(str(int(self.clock.get_fps())), True, pygame.Color('black'))
-            self.screen.blit(fps, (50, 50))
-        pygame.display.flip()
-
     def destroy(self):
         # 销毁场景
         # 一些可以模块化的销毁，比如销毁地图，销毁游戏对象，可以在子类另写销毁方法并在这里调用。
@@ -247,11 +213,6 @@ class GameScene(Scene):
             #print(event.target)
             self.all_sprites.add(event.source)
 
- 
-    def load_map(self):
-        pass
-    def render_map(self):
-        pass
     def load_spirites(self):
         '''
         加载精灵
@@ -260,3 +221,8 @@ class GameScene(Scene):
         '''
         pass
 
+    def load_map(self):
+        '''
+        加载地图
+        '''
+        pass

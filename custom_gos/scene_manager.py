@@ -44,15 +44,15 @@ class SceneManager(GameObject):
         
     def render(self, camera: Camera) -> None:
         """完全重写render,因为这是个不可见对象"""
-        zoom = self.scaling
-        image_to_render = pygame.transform.rotate(self.current_image, -self.angle)#渲染角度和物理角度相反
-        image_to_render = pygame.transform.scale(image_to_render, (int(image_to_render.get_width() * zoom ), int(image_to_render.get_height() * zoom )))
-        rect = image_to_render.get_rect()
+        # zoom = self.scaling
+        # image_to_render = pygame.transform.rotate(self.current_image, -self.angle)#渲染角度和物理角度相反
+        # image_to_render = pygame.transform.scale(image_to_render, (int(image_to_render.get_width() * zoom ), int(image_to_render.get_height() * zoom )))
+        # rect = image_to_render.get_rect()
         
-        rect.center = self.position  # 设置rect的中心为screen_position
-        self.rect = rect
+        # rect.center = self.position  # 设置rect的中心为screen_position
+        # self.rect = rect
 
-        self.screen.blit(image_to_render, rect.topleft)  # 使用rect的左上角作为渲染位置
+        # self.screen.blit(image_to_render, rect.topleft)  # 使用rect的左上角作为渲染位置
 
         #在屏幕右下角显示得分
         score_text = self.score_font.render('击杀得分：{:.2f}'.format(self.score_count), True, (86, 156, 179))
