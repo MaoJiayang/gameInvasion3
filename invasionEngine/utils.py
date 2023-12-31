@@ -132,7 +132,7 @@ class GeometryUtils:
 class TextureUtils:
     '''材质工具类'''
     @staticmethod  
-    def fill_polygon_with_texture(polygon: Union[pygame.Surface, List[Tuple[int, int]]], texture: pygame.Surface,listed: bool = False) -> pygame.Surface:
+    def fill_polygon_with_texture(polygon: Union[pygame.Surface, List[Tuple[int, int]]], texture: pygame.Surface) -> pygame.Surface:
         '''
         使用纹理填充多边形
         polygon: 多边形，可以是pygame.Surface或者是一个由顶点坐标组成的列表（左上角坐标系）

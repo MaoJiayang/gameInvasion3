@@ -47,9 +47,14 @@ class Camera(ComponentBase):
                  ):
         
         super().__init__()
-        self.center_x: float = initial_position[0]
-        self.center_y: float = initial_position[1]
-        self.bottomleft: Tuple[float, float] = (self.center_x - width / 2, self.center_y - height / 2)
+
+        # 新增属性以存储摄像头的目标位置
+        # 使用 Vec2d 替代单独的 x, y 坐标
+        self.center = pymunk.Vec2d(initial_position[0], initial_position[1])
+        self.target_center = pymunk.Vec2d(initial_position[0], initial_position[1])
+        self.move_speed: float = 0.1  # 新增移动速度属性
+        self.bottomleft: Tuple[float, float] = (self.center.x - width / 2, self.center.y - height / 2)
+
         self.width: int = width
         self.height: int = height
         self.screen: pygame.Surface = screen# ?似乎没有意义
@@ -63,6 +68,8 @@ class Camera(ComponentBase):
         self.target_zoom: float = 1.0  # 新增target_zoom属性
         self.zoom_speed: float = 0.005  # 新增zoom_speed属性
 
+
+
     @property
     def focus(self):
         if self._focus is not None:
@@ -70,7 +77,12 @@ class Camera(ComponentBase):
         return None
 
     @focus.setter
-    def focus(self, game_object):
+    def focus(self, game_object: GameObject):
+        '''
+        设置摄像头的焦点
+        focus: 焦点
+        取消焦点:set_focus(None)
+        '''
         if game_object == None:
             self._focus == None
             return
@@ -116,10 +128,15 @@ class Camera(ComponentBase):
         '''
         # 更新摄像头位置
         if self.focus is not None and not self.focus.destroyed:
-                target_position = (self.focus.position[0] * self.zoom, self.focus.position[1] * self.zoom)
-        self.center_x = target_position[0]
-        self.center_y = target_position[1]
-        self.bottomleft = (self.center_x - self.width / 2, self.center_y - self.height / 2)
+            target_position = (self.focus.position[0] * self.zoom, self.focus.position[1] * self.zoom)
+        self.target_center = pymunk.Vec2d(target_position[0],target_position[1])
+        # self.center = self.target_center
+
+        # 逐渐改变摄像头的位置
+        # 使用向量插值进行平滑移动
+        self.center += (self.target_center - self.center) * self.move_speed
+        
+        self.bottomleft = (self.center.x - self.width / 2, self.center.y - self.height / 2)
 
         # 在每一帧中逐渐改变zoom属性的值
         if self.zoom < self.target_zoom:
@@ -127,17 +144,6 @@ class Camera(ComponentBase):
         elif self.zoom > self.target_zoom:
             self.zoom = max(self.zoom - self.zoom_speed, self.target_zoom)
 
-    def set_focus(self, focus: GameObject) -> None:
-        '''
-        设置摄像头的焦点
-        focus: 焦点
-        取消焦点:set_focus(None)
-        '''
-        self.focus = focus
-    @property
-    def center(self):
-        return (self.center_x,self.center_y)
-    
     def destroy(self) -> None:
         self.screen = None
         self.focus = None
@@ -513,6 +519,7 @@ class KeyboardController(ComponentBase):
     def destroy(self) -> None:  
         pass
 
+import functools
 class SurfaceCache(ComponentBase):
     """
     由于pygame的Surface对象创建和销毁比较耗时，所以使用缓存来管理Surface对象
@@ -529,12 +536,27 @@ class SurfaceCache(ComponentBase):
         self.cache: Dict[Tuple[pygame.Surface, float, float], pygame.Surface] = {}
         self.zoom_granularity: float = zoom_granularity_factor * abs(zoom_range[1] - zoom_range[0])
         self.angle_granularity: float = angle_granularity_factor * abs(angle_range[1] - angle_range[0])
+
+    #定义一个粒度调整函数，用于将传入的zoom和angle调整为最接近的缓存值
+    def __granularity_adjust(self, zoom: float, angle: float) -> float:
+        adjusted_zoom = round(zoom / self.zoom_granularity) * self.zoom_granularity
+        adjusted_angle = round(angle / self.angle_granularity) * self.angle_granularity
+        return (adjusted_zoom,adjusted_angle)
+    
+    # @functools.lru_cache(maxsize = None)
+    # def  __surface_process(self, original_surface: pygame.Surface, zoom: float, angle: float) -> pygame.Surface:
+    #     # 缩放和旋转图像
+    #     processed_surface = pygame.transform.rotozoom(original_surface, angle, zoom)#这样处理比上面的方法质量更高耗时稍长
+    #     return processed_surface
+    
+    # def get(self, original_surface: pygame.Surface, zoom: float, angle: float) -> pygame.Surface:
+    #     adjusted_zoom, adjusted_angle = self.__granularity_adjust(zoom, angle)
+    #     return self.__surface_process(original_surface, adjusted_zoom, adjusted_angle)
     
     def get(self, original_surface: pygame.Surface, zoom: float, angle: float) -> pygame.Surface:
         #需要在游戏对象的render方法中调用。备注
         # 对zoom和angle应用粒度调整
-        adjusted_zoom = round(zoom / self.zoom_granularity) * self.zoom_granularity
-        adjusted_angle = round(angle / self.angle_granularity) * self.angle_granularity
+        adjusted_zoom, adjusted_angle = self.__granularity_adjust(zoom, angle)
 
         key = (original_surface, adjusted_zoom, adjusted_angle)
 
@@ -547,13 +569,14 @@ class SurfaceCache(ComponentBase):
             processed_surface = pygame.transform.rotozoom(original_surface, adjusted_angle, adjusted_zoom)#这样处理比上面的方法质量更高耗时稍长
             self.cache[key] = processed_surface
             
-
         return self.cache[key]
         # return pygame.transform.rotozoom(original_surface, adjusted_angle, adjusted_zoom)
+
     def update(self):
         super().update()
     def destroy(self):
         self.cache = None
+        self.__surface_process.cache_clear()
         super().destroy()
 # class Animation:
 #     '''
