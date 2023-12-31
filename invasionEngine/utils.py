@@ -12,6 +12,7 @@ import pymunk
 from pymunk.pygame_util import from_pygame, to_pygame
 from pymunk.vec2d import Vec2d
 from .constants import Constants
+# from .cpmodules.geometry_utils import CPGeometryUtils
 class GeometryUtils:
     '''
     几何工具类:

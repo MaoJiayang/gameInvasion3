@@ -39,7 +39,7 @@ class Constants(metaclass=ConstantMeta):
     SCREEN_HEIGHT: int = 768
 
     # 游戏最高帧率，不管性能如何，由于pygame限制，实测最多为500
-    FPS: int = 120
+    FPS: int = 240
 
     # 游戏物理世界的时间步长，单位为秒。需要确保该值小于1/FPS。该值越小，物理模拟越收敛于现实情况。太小会导致预先定义的控制器效果变差
     DELTA_TIME: float = 1/3600
