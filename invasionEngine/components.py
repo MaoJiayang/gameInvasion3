@@ -52,7 +52,7 @@ class Camera(ComponentBase):
         # 使用 Vec2d 替代单独的 x, y 坐标
         self.center = pymunk.Vec2d(initial_position[0], initial_position[1])
         self.target_center = pymunk.Vec2d(initial_position[0], initial_position[1])
-        self.move_speed: float = 0.1  # 新增移动速度属性
+        self.move_speed: float = 0.6  # 新增移动速度属性
         self.bottomleft: Tuple[float, float] = (self.center.x - width / 2, self.center.y - height / 2)
 
         self.width: int = width

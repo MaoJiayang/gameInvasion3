@@ -47,8 +47,8 @@ class MainGame(GameScene):
     def load_map(self):
         #为地图创建边界
         terrain_asserts = ResourceManager('resources\edges')
-        map_height = 4000
-        map_width = 4000
+        map_height = 6000
+        map_width = 6000
         # 使用线段划定地图边界
         # 设中点为0,0，确定四条线段的端点坐标对
         edges = [
