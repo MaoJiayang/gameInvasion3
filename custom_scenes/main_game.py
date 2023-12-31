@@ -97,7 +97,7 @@ class MainGame(GameScene):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:  # 鼠标滚轮向上滚动
                     self.camera.zooming(0.15)  # 放大视角
-                elif event.button == 5:  # 鼠标滚轮向下滚动
+                if event.button == 5:  # 鼠标滚轮向下滚动
                     self.camera.zooming(-0.15)  # 缩小视角
     
     def handle_event(self, event: Event):

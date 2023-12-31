@@ -114,7 +114,7 @@ class Camera(ComponentBase):
         return self.target_zoom
 
     def is_in_viewport(self, target: pygame.Rect) -> bool:
-        #判断目标是否在摄像头视野内，用于游戏对象渲染方法中的渲染检测
+        #判断目标rect是否在摄像头视野内，用于游戏对象渲染方法中的渲染检测
         return self.rect.colliderect(target)
     
     def update(self, target_position: Tuple[float, float] = (0,0)) -> None:
@@ -538,7 +538,7 @@ class SurfaceCache(ComponentBase):
         self.angle_granularity: float = angle_granularity_factor * abs(angle_range[1] - angle_range[0])
 
     #定义一个粒度调整函数，用于将传入的zoom和angle调整为最接近的缓存值
-    def __granularity_adjust(self, zoom: float, angle: float) -> float:
+    def _granularity_adjust(self, zoom: float, angle: float) -> float:
         adjusted_zoom = round(zoom / self.zoom_granularity) * self.zoom_granularity
         adjusted_angle = round(angle / self.angle_granularity) * self.angle_granularity
         return (adjusted_zoom,adjusted_angle)
@@ -556,7 +556,7 @@ class SurfaceCache(ComponentBase):
     def get(self, original_surface: pygame.Surface, zoom: float, angle: float) -> pygame.Surface:
         #需要在游戏对象的render方法中调用。备注
         # 对zoom和angle应用粒度调整
-        adjusted_zoom, adjusted_angle = self.__granularity_adjust(zoom, angle)
+        adjusted_zoom, adjusted_angle = self._granularity_adjust(zoom, angle)
 
         key = (original_surface, adjusted_zoom, adjusted_angle)
 
@@ -576,7 +576,7 @@ class SurfaceCache(ComponentBase):
         super().update()
     def destroy(self):
         self.cache = None
-        self.__surface_process.cache_clear()
+        # self.__surface_process.cache_clear()
         super().destroy()
 # class Animation:
 #     '''

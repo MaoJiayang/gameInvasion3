@@ -16,7 +16,7 @@ def main():
 # if sc.run():
 #     st.run(texts)
 #     cProfile.run('main()')
-cProfile.run('main()')
+cProfile.run('main()','performance.txt')
     
 
 # if GameStartScreen().run():
