@@ -26,13 +26,16 @@ class SceneManager(GameObject):
         self.scene: Scene = scene
         self.pending_score: float = 0#待加分
         self.score_count: float = 0#计分器
+        self.last_hud_update_time = pygame.time.get_ticks()
+        # 在初始化函数中创建一个新的 Surface 对象
+        self.score_surface = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
         self.font = pygame.font.Font('resources\\fonts\simhei\SIMHEI.TTF', 60)#用于显示测试文字
         self.score_font = pygame.font.Font('resources\\fonts\simhei\SIMHEI.TTF', 25)
         self.time_score:float = 0#时间得分
 
     def update(self, event_manager: EventManager) -> None:
         if self.scene.player.destroyed:
-            self.scene.camera.set_focus(None)
+            self.scene.camera.focus = None
             self.respawn()
 
         self.spawn_enemy()
@@ -44,21 +47,19 @@ class SceneManager(GameObject):
         
     def render(self, camera: Camera) -> None:
         """完全重写render,因为这是个不可见对象"""
-        zoom = self.scaling
-        image_to_render = pygame.transform.rotate(self.current_image, -self.angle)#渲染角度和物理角度相反
-        image_to_render = pygame.transform.scale(image_to_render, (int(image_to_render.get_width() * zoom ), int(image_to_render.get_height() * zoom )))
-        rect = image_to_render.get_rect()
-        
-        rect.center = self.position  # 设置rect的中心为screen_position
-        self.rect = rect
+        # 在屏幕右下角显示得分
+        current_time = pygame.time.get_ticks()
+        time_diff = current_time - self.last_hud_update_time
+        if time_diff > Constants.ANIMATION_INTERVAL:
+            score_text = self.score_font.render('击杀得分：{:.2f}'.format(self.score_count), True, (86, 156, 179))
+            time_score_text = self.score_font.render('时间分：{:.2f}'.format(self.time_score), True, (86, 156, 179))
+            self.score_surface.fill((0, 0, 0, 0))  # 清空 Surface
+            self.score_surface.blit(score_text, (self.screen.get_width() - score_text.get_width() - 10, self.screen.get_height() - score_text.get_height() - 10))
+            self.score_surface.blit(time_score_text, (self.screen.get_width() - time_score_text.get_width() - 10, self.screen.get_height() - time_score_text.get_height() - 40))
+            self.last_hud_update_time = pygame.time.get_ticks()
 
-        self.screen.blit(image_to_render, rect.topleft)  # 使用rect的左上角作为渲染位置
-
-        #在屏幕右下角显示得分
-        score_text = self.score_font.render('击杀得分：{:.2f}'.format(self.score_count), True, (86, 156, 179))
-        time_score_text = self.score_font.render('时间分：{:.2f}'.format(self.time_score), True, (86, 156, 179))
-        self.screen.blit(score_text, (self.screen.get_width() - score_text.get_width() - 10, self.screen.get_height() - score_text.get_height() - 10))
-        self.screen.blit(time_score_text, (self.screen.get_width() - time_score_text.get_width() - 10, self.screen.get_height() - time_score_text.get_height() - 40))
+        # 将得分 Surface 渲染到屏幕上
+        self.screen.blit(self.score_surface, (0, 0))
 
     def spawn_enemy(self):
         """生成敌人"""
@@ -70,7 +71,7 @@ class SceneManager(GameObject):
                     enemy_count += 1
             except:
                 pass
-        if enemy_count < 0:
+        if enemy_count < 1:
             # 生成敌人
             self.score_count += self.pending_score
             gun_list = ['Gatling', 'Autocannon', 'Railgun']
@@ -109,7 +110,8 @@ class SceneManager(GameObject):
                     if event.key == pygame.K_r:
                         # 玩家选择重生
                         new_player = Player(self.scene, (0, 0), self.scene.space, self.screen, camera=self.scene.camera, shape_type='poly')
-                        self.scene.camera.set_focus(new_player)
+                        self.scene.camera.focus = new_player
+                        # self.scene.camera.set_focus(None)
                         self.scene.all_sprites.add(new_player)
                         self.scene.player = new_player
                         self.score_count = 0

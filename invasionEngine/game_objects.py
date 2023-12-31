@@ -19,6 +19,8 @@ from pygame.sprite import Sprite
 from pygame.font import Font
 from pymunk.pygame_util import to_pygame, from_pygame
 from pymunk.vec2d import Vec2d
+
+from invasionEngine.components import Camera
 from .components import Camera,physicsComponent,EventManager,ResourceManager
 from .constants import Constants
 from .utils import TextureUtils,GeometryUtils
@@ -127,21 +129,22 @@ class GameObject(Sprite):
         '''
         screen_position = camera.apply(self.position)#坐标系变换
         zoom = self.scaling * camera.zooming()
-        # 计算放缩后的边界矩形
+
+        # 判断是否需要渲染
         zoomed_width = int(self.current_image.get_width() * zoom)
         zoomed_height = int(self.current_image.get_height() * zoom)
-        diagonal_length = (zoomed_width ** 2 + zoomed_height ** 2) ** 1/2#一个矩形可能旋转的区域是一个以对角线为直径的圆。新的判定rect可以以直径作为正方形rect的边长来解决旋转渲染问题
-        judgement_rect = pygame.Rect(0, 0, diagonal_length, diagonal_length)
+        angle = math.radians(-self.angle)
+        rotated_width = abs(zoomed_width * math.cos(angle)) + abs(zoomed_height * math.sin(angle))
+        rotated_height = abs(zoomed_width * math.sin(angle)) + abs(zoomed_height * math.cos(angle))
+        judgement_rect = pygame.Rect(0, 0, rotated_width, rotated_height)
         judgement_rect.center = screen_position
         if not camera.is_in_viewport(judgement_rect):
             return
+        
         #object_rect = pygame.Rect(0, 0,zoomed_width,zoomed_height)
         image_to_render = self.assets.get_cached_image(self.current_image, zoom, -self.angle)
-        # image_to_render = pygame.transform.scale(self.current_image, (int(self.current_image.get_width() * zoom ), int(self.current_image.get_height() * zoom )))
-        # image_to_render = pygame.transform.rotate(image_to_render, - self.angle)
-        
-        # image_to_render = pygame.transform.rotate(self.current_image, -self.angle)#渲染角度和物理角度相反
-        # image_to_render = pygame.transform.scale(image_to_render, (int(image_to_render.get_width() * zoom ), int(image_to_render.get_height() * zoom )))
+        # image_to_render = pygame.transform.rotozoom(self.current_image, -self.angle, zoom)
+
         rect = image_to_render.get_rect()
         rect.center = screen_position  # 设置rect的中心为screen_position
         self.rect = rect
@@ -421,13 +424,11 @@ class TerrainGO(GameObject):
 
         '''
         if shape_type == 'box':
-            # 检查shape_size是否为tuple
             assert isinstance(shape_size, tuple), f"shape_size for box {shape_size} is not a tuple"
             # 根据长（x）宽（y）创建一个元组列表，表示形状轮廓
             size_x, size_y = shape_size
             rendering_shape = [(0, 0), (0, size_y), (size_x, size_y), (size_x, 0)]#矩形无所谓反转y轴
         elif shape_type == 'circle':
-            # 检查shape_size是否为float
             assert isinstance(shape_size, (float, int)), f"shape_size for circle: {shape_size} is not a float or int"
             # 根据半径创建一个圆形Surface
             radius = shape_size
@@ -435,7 +436,6 @@ class TerrainGO(GameObject):
             pygame.draw.circle(shape, (255, 255, 255), (radius, radius), radius)
             rendering_shape = GeometryUtils.get_edge_pixels(shape)#圆无所谓反转y轴
         elif shape_type == 'poly':
-            # 检查shape_size是否为list[tuple]
             assert isinstance(shape_size, list), f"shape_size for poly {shape_size} is not a list"
             # 获取矩形区域高
             size_y = max(point[1] for point in shape_size) - min(point[1] for point in shape_size)

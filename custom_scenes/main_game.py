@@ -35,7 +35,7 @@ class MainGame(GameScene):
         bullet_test = Bullet((400,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10,angle=270)
         player = Player(self,(200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
         self.player = player
-        self.camera.set_focus(self.player)
+        self.camera.focus = self.player
         manager = SceneManager(self,self.screen)
         
 
@@ -47,10 +47,10 @@ class MainGame(GameScene):
     def load_map(self):
         #为地图创建边界
         terrain_asserts = ResourceManager('resources\edges')
-        map_height = 6100
-        map_width = 8100
+        map_height = 4000
+        map_width = 4000
         # 使用线段划定地图边界
-        # 设中点为0,0，地图宽度为1900，高度为3000，确定四条线段的端点坐标对
+        # 设中点为0,0，确定四条线段的端点坐标对
         edges = [
             # 上边界
             [(-map_width/2, map_height/2), (map_width/2, map_height/2)],
@@ -64,7 +64,7 @@ class MainGame(GameScene):
 
         # 创建地图边界
         for edge in edges:
-            edge_go = TerrainGO((0,0), self.space, self.screen, assets=terrain_asserts, shape_type='segment', shape_size=edge,radius=200,elasticity=0.5)
+            edge_go = TerrainGO((0,0), self.space, self.screen, assets=terrain_asserts, shape_type='segment', shape_size=edge,radius=50,elasticity=0.5)
             self.all_sprites.add(edge_go)
 
         # edge_go = TerrainGO((0,0), self.space, self.screen, assets=terrain_asserts, shape_type='segment', shape_size=[(100,200),(300,600)],radius=20,elasticity=0.5)

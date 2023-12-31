@@ -40,7 +40,7 @@ class AITest(GameScene):
         self.event_manager.subscribe(enemy2,Constants.HIT_EVENT)
         enemy1.behavior.target = enemy2#设置敌人的目标
         enemy2.behavior.target = enemy1#设置敌人的目标
-        self.camera.set_focus(player)
+        self.camera.focus = player
         #将测试对象加入精灵组
         #self.all_sprites.add(test_object)
         self.all_sprites.add(enemy1)
