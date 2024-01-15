@@ -49,13 +49,14 @@ def douglas_peucker_numba(points: np.ndarray, epsilon: float) -> np.ndarray:
     return result
 
 @njit
-def make_centroid_numba(polygon: np.ndarray) -> np.ndarray:
+def make_centroid_numba(polygon: np.ndarray, new_centroid: Tuple[float, float] = (0, 0)) -> np.ndarray:
     '''
-    将多边形平移到中心位于原点处
+    将多边形平移到中心位于新的点处
     '''
     centroid_x = np.mean(polygon[:, 0])
     centroid_y = np.mean(polygon[:, 1])
-    return np.column_stack((polygon[:, 0] - centroid_x, polygon[:, 1] - centroid_y))
+    # 平移到新的点
+    return np.column_stack((polygon[:, 0] - centroid_x + new_centroid[0], polygon[:, 1] - centroid_y + new_centroid[1]))
 
 # 初始化部分
 for _ in range(3):
@@ -77,8 +78,8 @@ class GeometryUtils:
         return douglas_peucker_numba(np.array(points), epsilon).tolist()
     
     @staticmethod
-    def make_centroid(polygon: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
-        return make_centroid_numba(np.array(polygon)).tolist()
+    def make_centroid(polygon: List[Tuple[float, float]], new_centroid: Tuple[float, float] = (0, 0)) -> List[Tuple[float, float]]:
+        return make_centroid_numba(np.array(polygon), new_centroid).tolist()
     
     @staticmethod
     def get_edge_pixels(image_surface: pygame.Surface, target_edges: int = Constants.MAX_ALLOWED_POLY_EDGES) -> List[Tuple[int, int]]:
