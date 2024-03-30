@@ -1,4 +1,4 @@
-from custom_scenes.main_game import MainGame
+from demo_scenes import MainGame
 from start_menu.game_start_screen import GameStartScreen
 from start_menu.story_teller import StoryTeller
 import cProfile
@@ -11,14 +11,11 @@ texts = [
 
 def main():
     MainGame().loop()
-# sc = GameStartScreen()
-# st = StoryTeller()
-# if sc.run():
-#     st.run(texts)
-#     cProfile.run('main()')
-cProfile.run('main()','performance.txt')
-    
+# cProfile.run('main()','performance.txt')
+
 
 # if GameStartScreen().run():
 #     StoryTeller().run(texts)
 #     MainGame().loop()
+
+main()

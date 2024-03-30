@@ -1,15 +1,13 @@
-from invasionEngine.events import Event
-from custom_components.custom_events import KineticHitEvent,RadarEchoEvent,RadarSearchEvent
-from invasionEngine.scenes import GameScene
-from invasionEngine.game_objects import GameObject,PhysicalGO,TerrainGO
-from invasionEngine.components import Camera,physicsComponent,ResourceManager
-from custom_components.constants import CustomConstants as Constants
-from custom_gos.bullet import Bullet
-from custom_gos.scene_manager import SceneManager
 import pygame
 import pymunk
-from custom_gos.bullet import Bullet
-from custom_gos.armed_ship import ArmedShip,Player,EnemyFighter
+from invasionEngine.events import Event
+from invasionEngine.scenes import GameScene
+from invasionEngine.game_objects import GameObject,PhysicalGO,TerrainGO
+from invasionEngine.components import ResourceManager
+from demo_components import CustomConstants as Constants
+from demo_components import Bullet,KineticHitEvent,RadarEchoEvent
+from demo_gos import SceneManager,Player
+
 class MainGame(GameScene):
     def __init__(self, title: str = '测试玩家场景'):
         super().__init__(title)
@@ -33,7 +31,7 @@ class MainGame(GameScene):
         #test_object3 = Bullet((150,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10)
         bocchi = GameObject((0,0),self.space,self.screen,assets = bocchi_pics)
         bullet_test = Bullet((400,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10,angle=270)
-        player = Player(self,(200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
+        player = Player((200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
         self.player = player
         self.camera.focus = self.player
         manager = SceneManager(self,self.screen)
