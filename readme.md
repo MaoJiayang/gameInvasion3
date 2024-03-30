@@ -22,7 +22,7 @@ pip install -r requirements.txt
 当然，如果你只是想要玩玩我的这个游戏，你也可以：
 ```bash
 #下载我的项目
-pip install gameInvasion==3.0.0
+pip install gameInvasion
 #运行主脚本
 python -m gameInvasion.main
 ```
