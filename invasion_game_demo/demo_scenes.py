@@ -31,7 +31,7 @@ class MainGame(GameScene):
         #test_object3 = Bullet((150,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10)
         bocchi = GameObject((0,0),self.space,self.screen,assets = bocchi_pics)
         bullet_test = Bullet((400,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10,angle=270)
-        player = Player((200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
+        player = Player(self,(200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
         self.player = player
         self.camera.focus = self.player
         manager = SceneManager(self,self.screen)

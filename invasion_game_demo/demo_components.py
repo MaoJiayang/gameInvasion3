@@ -47,7 +47,7 @@ class RadarSearchEvent(Event):
     def __init__(self,source,echo_type:int,target = None):
         """
         source:雷达发射源
-        echo_type:雷达反射源类型,参考custom_components.constants.CustomConstants游戏对象类型常量
+        echo_type:雷达反射源类型,参考CustomConstants游戏对象类型常量
         target:处理探测逻辑的对象。
         """
         super().__init__(source, target)
