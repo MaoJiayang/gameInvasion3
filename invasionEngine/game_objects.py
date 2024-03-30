@@ -397,7 +397,7 @@ class TerrainGO(GameObject):
             texture = Surface((25, 25), flags = pygame.SRCALPHA)
             texture.fill(color)
             self.textures['default_texture'] = texture
-
+        self.full_rendering_shape: List[Tuple[int, int]] = []
         shape_type, shape_size = self.create_shape(shape_type, shape_size,**kwargs)#创建形状
 
             
@@ -427,21 +427,21 @@ class TerrainGO(GameObject):
             assert isinstance(shape_size, tuple), f"shape_size for box {shape_size} is not a tuple"
             # 根据长（x）宽（y）创建一个元组列表，表示形状轮廓
             size_x, size_y = shape_size
-            rendering_shape = [(0, 0), (0, size_y), (size_x, size_y), (size_x, 0)]#矩形无所谓反转y轴
+            self.full_rendering_shape = [(0, 0), (0, size_y), (size_x, size_y), (size_x, 0)]#矩形无所谓反转y轴
         elif shape_type == 'circle':
             assert isinstance(shape_size, (float, int)), f"shape_size for circle: {shape_size} is not a float or int"
             # 根据半径创建一个圆形Surface
             radius = shape_size
             shape = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
             pygame.draw.circle(shape, (255, 255, 255), (radius, radius), radius)
-            rendering_shape = GeometryUtils.get_edge_pixels(shape)#圆无所谓反转y轴
+            self.full_rendering_shape = GeometryUtils.get_edge_pixels(shape)#圆无所谓反转y轴
         elif shape_type == 'poly':
             assert isinstance(shape_size, list), f"shape_size for poly {shape_size} is not a list"
             # 获取矩形区域高
             size_y = max(point[1] for point in shape_size) - min(point[1] for point in shape_size)
             # 在该区域进行y轴反转
             shape = [(x, size_y - y) for x, y in shape_size]
-            rendering_shape = shape_size = GeometryUtils.make_centroid(shape)
+            self.full_rendering_shape = shape_size = GeometryUtils.make_centroid(shape)
         elif shape_type == 'segment':
             shape_type = 'poly'#实际上在使用poly去实现segment功能
             point1, point2 = shape_size#获取端点
@@ -449,7 +449,7 @@ class TerrainGO(GameObject):
             # 得到外切矩形的y轴长度
             size_y = max(phsycal_shape, key=lambda point: point[1])[1] - min(phsycal_shape, key=lambda point: point[1])[1]
             # 在该区域进行y轴反转
-            rendering_shape = [(x, size_y - y) for x, y in phsycal_shape]
+            self.full_rendering_shape = [(x, size_y - y) for x, y in phsycal_shape]
             self.position = ((point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2)
             shape_size = GeometryUtils.make_centroid(phsycal_shape)
         else:
@@ -460,9 +460,58 @@ class TerrainGO(GameObject):
             print('警告：ShapeDefinedGO的images属性不为空，已清空')
         # 遍历textures字典，使用TextureUtils.fill_polygon_with_texture方法填充多边形轮廓并加入images字典
         for texture_name, texture in self.textures.items():
-            self.images[texture_name] = TextureUtils.fill_polygon_with_texture(rendering_shape, texture)
+            self.images[texture_name] = TextureUtils.fill_polygon_with_texture(self.full_rendering_shape, texture)
         return shape_type,shape_size
     
+    # def render(self, camera: Camera) -> None:
+    #     '''
+    #     渲染方法，用于渲染对象
+    #     子类在重写此方法时，绝大多数情况下都应该调用父类的render方法
+
+    #     Args:
+    #         camera (Camera): 相机对象。
+
+    #     '''
+    #     screen_position = camera.apply(self.position)#坐标系变换
+    #     zoom = self.scaling * camera.zooming()
+
+    #     # 判断是否需要渲染
+    #     zoomed_width = int(self.current_image.get_width() * zoom)
+    #     zoomed_height = int(self.current_image.get_height() * zoom)
+    #     angle = math.radians(-self.angle)
+    #     rotated_width = abs(zoomed_width * math.cos(angle)) + abs(zoomed_height * math.sin(angle))
+    #     rotated_height = abs(zoomed_width * math.sin(angle)) + abs(zoomed_height * math.cos(angle))
+    #     judgement_rect = pygame.Rect(0, 0, rotated_width, rotated_height)
+    #     judgement_rect.center = screen_position
+    #     if not camera.is_in_viewport(judgement_rect):
+    #         return
+
+    #     texture_to_fill = self.assets.get_cached_image(self.textures[self.texture_index], zoom, -self.angle)
+
+    #     rect = image_to_render.get_rect()
+    #     rect.center = screen_position  # 设置rect的中心为screen_position
+    #     self.rect = rect
+    #     self.screen.blit(image_to_render, rect.topleft)  # 使用rect的左上角作为渲染位置
+
+    # def animation_update(self):
+    #     '''
+    #     动画更新函数，用于更新动画帧
+    #     （不包括渲染部分，只负责逻辑更新）
+    #     该方法会在update方法中被调用
+    #     子类可以重写此方法，实现自定义的动画更新
+    #     '''
+    #     # 获取当前时间
+    #     current_time = pygame.time.get_ticks()
+    #     # 计算时间差
+    #     time_diff = current_time - self.last_frame_update_time
+    #     # 如果时间差大于等于帧切换的时间间隔（例如，每100毫秒切换一次帧）
+    #     if time_diff >= Constants.ANIMATION_INTERVAL:
+    #         # 更新当前帧
+    #         #self.image_index = (self.image_index + 1) % len(self.images)
+    #         self.texture_index = (self.texture_index + 1) % len(self.textures)
+    #         # 更新当前材质
+    #         self.last_frame_update_time = current_time
+
     def update(self, event_manager: EventManager) -> None:
         #更新动画部分
         self.animation_update()

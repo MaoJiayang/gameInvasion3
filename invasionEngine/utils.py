@@ -13,6 +13,56 @@ from pymunk.pygame_util import from_pygame, to_pygame
 from pymunk.vec2d import Vec2d
 from .constants import Constants
 # from .cpmodules.geometry_utils import CPGeometryUtils
+import numpy as np
+from numba import jit,njit
+
+@njit
+def distance_point_to_line_numba(point: np.ndarray, line_start: np.ndarray, line_end: np.ndarray) -> float:
+    x_diff = line_end[0] - line_start[0]
+    y_diff = line_end[1] - line_start[1]
+    denominator = np.hypot(x_diff, y_diff)
+    if denominator == 0:
+        return 0
+    return abs(y_diff * point[0] - x_diff * point[1] + line_end[0] * line_start[1] - line_end[1] * line_start[0]) / denominator
+
+@njit
+def douglas_peucker_numba(points: np.ndarray, epsilon: float) -> np.ndarray:
+    if len(points) <= 2:
+        return points
+    d_max = 0
+    index = 0
+    end = len(points) - 2
+    for i in range(1, end):
+        d = distance_point_to_line_numba(points[i], points[0], points[end])
+        if d > d_max:
+            index = i
+            d_max = d
+    if d_max > epsilon:
+        left_simplified = douglas_peucker_numba(points[:index + 1], epsilon)
+        right_simplified = douglas_peucker_numba(points[index:], epsilon)
+        return np.concatenate((left_simplified[:-1], right_simplified))
+    # 创建一个新的二维数组来存放结果
+    result = np.empty((2, points.shape[1]), dtype=points.dtype)
+    result[0] = points[0]
+    result[1] = points[end]
+
+    return result
+
+@njit
+def make_centroid_numba(polygon: np.ndarray, new_centroid: Tuple[float, float] = (0, 0)) -> np.ndarray:
+    '''
+    将多边形平移到中心位于新的点处
+    '''
+    centroid_x = np.mean(polygon[:, 0])
+    centroid_y = np.mean(polygon[:, 1])
+    # 平移到新的点
+    return np.column_stack((polygon[:, 0] - centroid_x + new_centroid[0], polygon[:, 1] - centroid_y + new_centroid[1]))
+
+# 初始化部分
+for _ in range(3):
+    points = np.array([[0, 0]])
+    douglas_peucker_numba(points,1)
+
 class GeometryUtils:
     '''
     几何工具类:
@@ -21,47 +71,15 @@ class GeometryUtils:
     '''
     @staticmethod
     def distance_point_to_line(point: Tuple[float, float], line_start: Tuple[float, float], line_end: Tuple[float, float]) -> float:
-        '''计算点到线段的距离'''
-        x, y = point
-        x1, y1 = line_start
-        x2, y2 = line_end
-        denominator = (y2 - y1)**2 + (x2 - x1)**2
-        # 添加检查，避免端点重合导致除零错误
-        if denominator == 0:
-            return 0
-        return abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) / (denominator)**0.5
+        return distance_point_to_line_numba(np.array(point), np.array(line_start), np.array(line_end))
 
     @staticmethod
-    def douglas_peucker(points: List[Tuple[float, float]], epsilon: float) -> List[Tuple[float, float]]:
-        '''Douglas-Peucker抽稀算法，用于解析传入多边形轮廓的顶点'''
-        if len(points) <= 2:
-            return points
-        # 找到最大距离点
-        d_max = 0
-        index = 0
-        end = len(points) - 2 #避免闭合点由于首尾相接而导致点线距离恒为0，所以这里减2而不是减1
-        for i in range(1, end):
-            d = GeometryUtils.distance_point_to_line(points[i], points[0], points[end])
-            if d > d_max:
-                index = i
-                d_max = d
-        # 检查最大距离是否大于阈值
-        if d_max > epsilon:
-            # 递归调用
-            left_simplified = GeometryUtils.douglas_peucker(points[:index + 1], epsilon)
-            right_simplified = GeometryUtils.douglas_peucker(points[index:], epsilon)
-            return left_simplified[:-1] + right_simplified
-        # 如果最大距离小于阈值，直接返回首尾点
-        return [points[0], points[end]]
+    def douglas_peucker(points: List[Tuple[float, float]], epsilon: float = 1) -> List[Tuple[float, float]]:
+        return douglas_peucker_numba(np.array(points), epsilon).tolist()
     
     @staticmethod
-    def make_centroid(polygon: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
-        '''
-        将多边形平移到中心位于原点处
-        '''
-        centroid_x = sum(x for x, _ in polygon) / len(polygon)
-        centroid_y = sum(y for _, y in polygon) / len(polygon)
-        return [(x - centroid_x, y - centroid_y) for x, y in polygon]
+    def make_centroid(polygon: List[Tuple[float, float]], new_centroid: Tuple[float, float] = (0, 0)) -> List[Tuple[float, float]]:
+        return make_centroid_numba(np.array(polygon), new_centroid).tolist()
     
     @staticmethod
     def get_edge_pixels(image_surface: pygame.Surface, target_edges: int = Constants.MAX_ALLOWED_POLY_EDGES) -> List[Tuple[int, int]]:
@@ -97,7 +115,6 @@ class GeometryUtils:
             raise ValueError("radius must be a number")
 
         point1, point2 = points
-
         # 计算线段的方向向量
         direction = pymunk.Vec2d(point2[0],point2[1]) - pymunk.Vec2d(point1[0],point1[1])
         # 将方向向量归一化
