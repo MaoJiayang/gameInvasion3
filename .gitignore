@@ -3,3 +3,6 @@
 *.ipynb
 performance.*
 .conda/
+dist/
+gameInvasion.egg-info/
+build.txt
