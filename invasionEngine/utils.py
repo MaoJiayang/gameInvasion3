@@ -115,7 +115,6 @@ class GeometryUtils:
             raise ValueError("radius must be a number")
 
         point1, point2 = points
-
         # 计算线段的方向向量
         direction = pymunk.Vec2d(point2[0],point2[1]) - pymunk.Vec2d(point1[0],point1[1])
         # 将方向向量归一化
