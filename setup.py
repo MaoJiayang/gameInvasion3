@@ -4,12 +4,21 @@ with open('requirements.txt',encoding='utf-8') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name='gameInvasion',
-    version='3.0.0',
+    name='gameInvasion3',
+    version='1.1.18',
     url='https://github.com/MaoJiayang/gameInvasion3',
     author='Jiayang Mao',
     author_email='Nucleon_17th@njust.edu.cn',
     description='a python game engine for my 2D game development',
-    packages=find_packages(),    
+    packages=['invasion_game_demo','invasionEngine'],
+    package_data={
+        'invasion_game_demo': ['resources/**/*'],
+    },  
     install_requires=requirements,
+    entry_points={
+        'console_scripts': [
+            'gameInvasion3=invasion_game_demo.main:main', 
+        ],
+    },
+
 )

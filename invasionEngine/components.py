@@ -6,6 +6,7 @@ import pygame
 import random
 from .constants import Constants
 from typing import Union,Tuple
+from pkg_resources import resource_listdir
 import pymunk
 from pymunk.pygame_util import to_pygame, from_pygame
 import pygame
@@ -14,7 +15,7 @@ from queue import Queue
 import weakref
 import inspect
 from .events import Event
-from .utils import GeometryUtils,TextureUtils
+from .utils import GeometryUtils,TextureUtils,FilePathUtils
 from typing import Literal, List, Dict, Tuple, Union,Any
 from typing import TYPE_CHECKING, ForwardRef
 if TYPE_CHECKING:
@@ -385,8 +386,8 @@ class ResourceManager(ComponentBase):
         """
         加载指定目录中的资源，并按照一定规则整理
         """
-        directory = os.path.normpath(directory)  # 规范化路径
-        for filename in os.listdir(directory):
+        filenames = FilePathUtils.get_filenames(directory)#获取正确路径下的所有文件名
+        for filename in filenames:
             if not os.path.isfile(os.path.join(directory, filename)):
                 continue
             name, ext = os.path.splitext(filename)

@@ -57,4 +57,10 @@ class Constants(metaclass=ConstantMeta):
 
     #游戏摄像机的缩放范围.注意，这里的缩放范围不是指摄像机的范围，而是指摄像机的缩放倍数。大数决定能放大到多大，小数决定能缩小到多小
     ZOOM_RANGE: tuple[float, float] = (0.2, 1.1)
+
+    #游戏demo包名
+    DEMO_PACKAGE_NAME: str = 'invasion_game_demo'
+
+    #游戏包名
+    GAME_PACKAGE_NAME: str = 'gameInvasion3'
     

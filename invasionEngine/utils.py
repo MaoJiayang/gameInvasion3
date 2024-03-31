@@ -6,6 +6,8 @@
         Douglas-Peucker抽稀算法
     2.渲染工具类
 '''
+import os
+from pkg_resources import resource_listdir,resource_filename
 from typing import List, Tuple, Union
 import pygame
 import pymunk
@@ -190,3 +192,31 @@ class TextureUtils:
         surface.blit(mask_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         return surface
+    
+class FilePathUtils:
+    '''文件路径工具类'''
+    @staticmethod
+    def get_directory_path(directory: str) -> str:
+        directory = os.path.normpath(directory)  # 规范化路径
+        return directory
+        
+    @staticmethod
+    def get_filenames(directory: str) -> List[str]:
+        '''
+        获取指定目录下的所有文件名
+        '''
+        directory = FilePathUtils.get_directory_path(directory)
+        try:
+            # 尝试按照文件系统路径处理
+            filenames = os.listdir(directory)
+        except FileNotFoundError:
+            try:
+                # 尝试按照包资源路径处理
+                package_name = __name__.split('.')[0]  # 获取包名
+                package_directory = resource_filename(package_name, '')  # 获取包的根目录
+                relative_directory = os.path.relpath(directory, start=package_directory)  # 获取相对路径
+                filenames = resource_listdir(package_name, relative_directory)
+            except FileNotFoundError:
+                filenames = []
+                print(f"目录{directory}不存在")
+        return filenames
