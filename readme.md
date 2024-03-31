@@ -31,7 +31,7 @@ gameInvasion3
 使用非pypi官方源的小伙伴注意：我的包可能并未同步到各个镜像上。因此如果上述指令显示包不存在，请试试使用官方源来安装
 ```bash
 #下载我的项目
-pip install gameInvasion3 -i https://pypi.org/simple gameInvasion3
+pip install gameInvasion3 -i https://pypi.org/simple
 #运行可执行文件
 gameInvasion3
 ```
