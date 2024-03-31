@@ -4,9 +4,9 @@ from invasionEngine.events import Event
 from invasionEngine.scenes import GameScene
 from invasionEngine.game_objects import GameObject,PhysicalGO,TerrainGO
 from invasionEngine.components import ResourceManager
-from demo_components import CustomConstants as Constants
-from demo_components import Bullet,KineticHitEvent,RadarEchoEvent
-from demo_gos import SceneManager,Player
+from invasion_game_demo.demo_components import CustomConstants as Constants
+from invasion_game_demo.demo_components import Bullet,KineticHitEvent,RadarEchoEvent
+from invasion_game_demo.demo_gos import SceneManager,Player
 
 class MainGame(GameScene):
     def __init__(self, title: str = '测试玩家场景'):

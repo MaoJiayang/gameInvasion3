@@ -199,10 +199,6 @@ class FilePathUtils:
     def get_directory_path(directory: str) -> str:
         directory = os.path.normpath(directory)  # 规范化路径
         return directory
-        # if os.path.exists(directory):  # 开发模式
-        #     return directory
-        # else:  # 安装后运行
-        #     return resource_filename(Constants.GAME_PACKAGE_NAME, directory)
         
     @staticmethod
     def get_filenames(directory: str) -> List[str]:
@@ -210,9 +206,17 @@ class FilePathUtils:
         获取指定目录下的所有文件名
         '''
         directory = FilePathUtils.get_directory_path(directory)
-        # if os.path.exists(directory):  # 开发模式
-        #     filenames = os.listdir(directory)
-        # else:  # 安装后运行
-        #     filenames = resource_listdir(Constants.GAME_PACKAGE_NAME, directory)
-        filenames = os.listdir(directory)
+        try:
+            # 尝试按照文件系统路径处理
+            filenames = os.listdir(directory)
+        except FileNotFoundError:
+            try:
+                # 尝试按照包资源路径处理
+                package_name = __name__.split('.')[0]  # 获取包名
+                package_directory = resource_filename(package_name, '')  # 获取包的根目录
+                relative_directory = os.path.relpath(directory, start=package_directory)  # 获取相对路径
+                filenames = resource_listdir(package_name, relative_directory)
+            except FileNotFoundError:
+                filenames = []
+                print(f"目录{directory}不存在")
         return filenames

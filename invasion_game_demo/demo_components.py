@@ -8,6 +8,7 @@ from pygame.surface import Surface
 import pymunk
 from pymunk.vec2d import Vec2d
 from abc import ABC, abstractmethod
+from pkg_resources import resource_filename
 from invasionEngine.constants import Constants
 from invasionEngine.events import Event
 from invasionEngine.components import ComponentBase
@@ -62,10 +63,11 @@ class RadarEchoEvent(Event):
 # 初始化pygame解决初始化问题
 pygame.init()
 #读取默认子弹资源
-default_bullet_images = ResourceManager('resources\\bullet')   
-default_autocannon_assers = ResourceManager('resources\\autocannon')
-default_gatling_assers = ResourceManager('resources\gatling')
-default_railgun_assers = ResourceManager('resources\\railgun')
+default_bullet_images = ResourceManager(resource_filename('invasion_game_demo', 'resources/bullet'))
+print('包工作路径：',resource_filename('invasion_game_demo', 'resources/bullet'))
+default_autocannon_assers = ResourceManager(resource_filename('invasion_game_demo', 'resources/autocannon'))
+default_gatling_assers = ResourceManager(resource_filename('invasion_game_demo', 'resources/gatling'))
+default_railgun_assers = ResourceManager(resource_filename('invasion_game_demo', 'resources/railgun'))
 class Bullet(Projectile):
     def __init__(self, 
             position: Tuple[int, int], 

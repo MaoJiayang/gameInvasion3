@@ -4,18 +4,19 @@ import pymunk
 import math
 import random
 from typing import Tuple, List, Literal
+from pkg_resources import resource_filename
 from invasionEngine.game_objects import GameObject,PhysicalGO,Projectile
 from invasionEngine.components import Camera,ResourceManager,EventManager,KeyboardController
 from invasionEngine.events import Event
 from invasionEngine.scenes import Scene
 from invasionEngine.utils import FilePathUtils
-from demo_components import CustomConstants as Constants
-from demo_components import RadarSearchEvent,KineticHitEvent,HitEvent,Behavior,ChaseAndAimingBehavior
-from demo_components import HealthSystem,Thruster,Gyroscope,Autocannon,Railgun,Gatling,Gun
+from invasion_game_demo.demo_components import CustomConstants as Constants
+from invasion_game_demo.demo_components import RadarSearchEvent,KineticHitEvent,HitEvent,Behavior,ChaseAndAimingBehavior
+from invasion_game_demo.demo_components import HealthSystem,Thruster,Gyroscope,Autocannon,Railgun,Gatling,Gun
 
-default_player_assets = ResourceManager('resources\playership_pics')
-default_enemy_assets = ResourceManager('resources\playership_big')
-test_font_path = FilePathUtils.get_directory_path('resources\\fonts\simhei\SIMHEI.TTF')
+default_player_assets = ResourceManager(resource_filename('invasion_game_demo', 'resources/playership_pics'))
+default_enemy_assets = ResourceManager(resource_filename('invasion_game_demo', 'resources/playership_big'))
+test_font_path = resource_filename('invasion_game_demo', 'resources/fonts/simhei/SIMHEI.TTF')
     
 class ArmedShip(PhysicalGO):
     '''

@@ -1,7 +1,7 @@
-from demo_scenes import MainGame
-from start_menu.game_start_screen import GameStartScreen
-from start_menu.story_teller import StoryTeller
-import cProfile
+from invasion_game_demo.demo_scenes import MainGame
+# from start_menu.game_start_screen import GameStartScreen
+# from start_menu.story_teller import StoryTeller
+# import cProfile
 texts = [
         "二十一世纪中叶，宇宙探索热潮再启。\n少年吉诺坐在电脑前，屏幕上的新闻标题不停变换。",
         "人们在社交网络上激烈探讨。\n“时光流转，科技的脚步不停歇。超越光速，第四次工业革命已经到来。”\n“科学的奇迹在星际间交相辉映，外来星球的电磁信号解析成功。”\n“地球文明的孤岛已被打破。世界工业大会开幕，本期主题：守护文明。”\n“跃迁引擎横空出世，先遣队成立，他们将冲锋在前，为人类的未来开疆拓土。”",

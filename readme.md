@@ -19,27 +19,24 @@ pip install -r requirements.txt
 ```bash
 pip install -r requirements.txt
 ```
-当然，如果你只是想要玩玩我的这个游戏，你也可以：
-```bash
-#下载我的项目
-pip install gameInvasion
-#运行主脚本
-python -m gameInvasion.main
-```
+安装好该项目之后，你可以进入项目目录，运行develop_main.py
 
-使用非pypi官方源的小伙伴注意：我的包可能并未同步到各个镜像上。因此请使用官方源来安装
+当然，如果你只是想要玩玩我的这个游戏demo，你也可以：
 ```bash
 #下载我的项目
-pip install -i https://pypi.org/simple gameInvasion
-#运行主脚本
-python -m gameInvasion.main
+pip install gameInvasion3
+#运行可执行文件
+gameInvasion3
+```
+使用非pypi官方源的小伙伴注意：我的包可能并未同步到各个镜像上。因此如果上述指令显示包不存在，请试试使用官方源来安装
+```bash
+#下载我的项目
+pip install gameInvasion3 -i https://pypi.org/simple gameInvasion3
+#运行可执行文件
+gameInvasion3
 ```
 ## 项目结构
 ### invasionEngine:游戏引擎本体
 其中包括了组件-游戏对象-场景的基本游戏引擎组织结构。也包括一些常数定义和游戏事件的定义。一般来说，仅仅是使用本项目时无需修改其中的代码。
-### 各类以custom_开头的目录：
-这里是游戏引擎基础上自定义的组件-游戏对象-场景结构。
-### resources:
-游戏用到的资源文件应该放在这里。
-### start_menu:
-目前游戏还未将游戏界面编辑集成至引擎内。所以这里存储着完全外置的开始菜单模块。
+### invasion_game_demo：
+这里是游戏demo
