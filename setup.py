@@ -5,7 +5,7 @@ with open('requirements.txt',encoding='utf-8') as f:
 
 setup(
     name='gameInvasion3',
-    version='1.1.19',
+    version='1.1.21',
     url='https://github.com/MaoJiayang/gameInvasion3',
     author='Jiayang Mao',
     author_email='Nucleon_17th@njust.edu.cn',

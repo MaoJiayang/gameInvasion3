@@ -381,7 +381,6 @@ class EnemyFighter(ArmedShip):
             self.pending_events.append(radar_search_event)
         super().physical_update()
 
-default_font_path = FilePathUtils.get_directory_path('resources\\fonts\simhei\SIMHEI.TTF')
 class SceneManager(GameObject):
     def __init__(self, 
                  scene: Scene,
@@ -403,8 +402,8 @@ class SceneManager(GameObject):
         self.last_hud_update_time = pygame.time.get_ticks()
         # 在初始化函数中创建一个新的 Surface 对象
         self.score_surface = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
-        self.font = pygame.font.Font(default_font_path, 60)#用于显示测试文字
-        self.score_font = pygame.font.Font(default_font_path, 25)
+        self.font = pygame.font.Font(test_font_path, 60)#用于显示测试文字
+        self.score_font = pygame.font.Font(test_font_path, 25)
         self.time_score:float = 0#时间得分
 
     def update(self, event_manager: EventManager) -> None:

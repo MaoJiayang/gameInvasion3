@@ -1,5 +1,6 @@
 import pygame
 import pymunk
+from pkg_resources import resource_filename
 from invasionEngine.events import Event
 from invasionEngine.scenes import GameScene
 from invasionEngine.game_objects import GameObject,PhysicalGO,TerrainGO
@@ -20,9 +21,8 @@ class MainGame(GameScene):
         #设置重力
         # self.space.gravity = (0,-100)
     def load_spirites(self):
-        bocchi_pics = ResourceManager('resources\\bo2')
-        astorid_pics = ResourceManager('resources\\astorid')
-        bullet_pics = ResourceManager('resources\\railgun')
+        bocchi_pics = ResourceManager(resource_filename('invasion_game_demo', 'resources/bo2'))
+        astorid_pics = ResourceManager(resource_filename('invasion_game_demo', 'resources/astorid'))
         #创建一个测试对象
         #test_object = PhysicalGO((0,150),self.space,self.screen,assets = enemy_pics,shape_type = 'poly',mass = 10)
         astorid = PhysicalGO((-200,-200),self.space,self.screen,assets = astorid_pics,shape_type = 'poly',mass = 500)
@@ -30,7 +30,6 @@ class MainGame(GameScene):
         astorid3 = PhysicalGO((200,-200),self.space,self.screen,assets = astorid_pics,shape_type = 'poly',mass = 500)
         #test_object3 = Bullet((150,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10)
         bocchi = GameObject((0,0),self.space,self.screen,assets = bocchi_pics)
-        bullet_test = Bullet((400,0),self.space,self.screen,assets = bullet_pics,time_to_live=100000,mass=10,angle=270)
         player = Player(self,(200,200),self.space,self.screen,camera = self.camera,shape_type = 'poly')
         self.player = player
         self.camera.focus = self.player
@@ -44,9 +43,9 @@ class MainGame(GameScene):
 
     def load_map(self):
         #为地图创建边界
-        terrain_asserts = ResourceManager('resources\edges')
-        map_height = 6000
-        map_width = 6000
+        terrain_asserts = ResourceManager(resource_filename('invasion_game_demo', 'resources/edges'))
+        map_height = 5000
+        map_width = 5000
         # 使用线段划定地图边界
         # 设中点为0,0，确定四条线段的端点坐标对
         edges = [
