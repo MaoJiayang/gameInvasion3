@@ -5,7 +5,7 @@ with open('requirements.txt',encoding='utf-8') as f:
 
 setup(
     name='gameInvasion3',
-    version='1.1.18',
+    version='1.1.19',
     url='https://github.com/MaoJiayang/gameInvasion3',
     author='Jiayang Mao',
     author_email='Nucleon_17th@njust.edu.cn',
@@ -15,6 +15,7 @@ setup(
         'invasion_game_demo': ['resources/**/*'],
     },  
     install_requires=requirements,
+    python_requires='>=3.9',
     entry_points={
         'console_scripts': [
             'gameInvasion3=invasion_game_demo.main:main', 
