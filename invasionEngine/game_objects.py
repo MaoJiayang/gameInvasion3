@@ -462,55 +462,6 @@ class TerrainGO(GameObject):
         for texture_name, texture in self.textures.items():
             self.images[texture_name] = TextureUtils.fill_polygon_with_texture(self.full_rendering_shape, texture)
         return shape_type,shape_size
-    
-    # def render(self, camera: Camera) -> None:
-    #     '''
-    #     渲染方法，用于渲染对象
-    #     子类在重写此方法时，绝大多数情况下都应该调用父类的render方法
-
-    #     Args:
-    #         camera (Camera): 相机对象。
-
-    #     '''
-    #     screen_position = camera.apply(self.position)#坐标系变换
-    #     zoom = self.scaling * camera.zooming()
-
-    #     # 判断是否需要渲染
-    #     zoomed_width = int(self.current_image.get_width() * zoom)
-    #     zoomed_height = int(self.current_image.get_height() * zoom)
-    #     angle = math.radians(-self.angle)
-    #     rotated_width = abs(zoomed_width * math.cos(angle)) + abs(zoomed_height * math.sin(angle))
-    #     rotated_height = abs(zoomed_width * math.sin(angle)) + abs(zoomed_height * math.cos(angle))
-    #     judgement_rect = pygame.Rect(0, 0, rotated_width, rotated_height)
-    #     judgement_rect.center = screen_position
-    #     if not camera.is_in_viewport(judgement_rect):
-    #         return
-
-    #     texture_to_fill = self.assets.get_cached_image(self.textures[self.texture_index], zoom, -self.angle)
-
-    #     rect = image_to_render.get_rect()
-    #     rect.center = screen_position  # 设置rect的中心为screen_position
-    #     self.rect = rect
-    #     self.screen.blit(image_to_render, rect.topleft)  # 使用rect的左上角作为渲染位置
-
-    # def animation_update(self):
-    #     '''
-    #     动画更新函数，用于更新动画帧
-    #     （不包括渲染部分，只负责逻辑更新）
-    #     该方法会在update方法中被调用
-    #     子类可以重写此方法，实现自定义的动画更新
-    #     '''
-    #     # 获取当前时间
-    #     current_time = pygame.time.get_ticks()
-    #     # 计算时间差
-    #     time_diff = current_time - self.last_frame_update_time
-    #     # 如果时间差大于等于帧切换的时间间隔（例如，每100毫秒切换一次帧）
-    #     if time_diff >= Constants.ANIMATION_INTERVAL:
-    #         # 更新当前帧
-    #         #self.image_index = (self.image_index + 1) % len(self.images)
-    #         self.texture_index = (self.texture_index + 1) % len(self.textures)
-    #         # 更新当前材质
-    #         self.last_frame_update_time = current_time
 
     def update(self, event_manager: EventManager) -> None:
         #更新动画部分
