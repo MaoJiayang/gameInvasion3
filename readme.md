@@ -1,10 +1,12 @@
 [English version](readme_en.md)
 
-### 末次更新：20240401
+### 末次更新：20240723
+20240723 --更新了中文readme
 # GameInvasion
 该项目是我的某课程作业。
 纯python游戏，老师的初衷是“外星人入侵”但我觉得这个名字实在是太丑陋了（）
 该项目旨在自行学习和编写一个基于纯python的游戏引擎，并基于该引擎开发一个游戏。
+PyPi项目地址：https://pypi.org/project/gameInvasion3/
 
 ## 安装
 请确保你的python版本大于3.9
