@@ -1,6 +1,6 @@
 [中文版本](readme.md)
 
-### Last update: 20240401
+### Last update: 20250617
 # GameInvasion
 This project is a homework for one of my courses.
 A pure Python game, the teacher's original intention was "Alien Invasion" but I think this name is too ugly ()

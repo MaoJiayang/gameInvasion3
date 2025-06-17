@@ -3,6 +3,7 @@
 *.ipynb
 performance.*
 .conda/
+.venv/
 build.txt
 build/
 dist/
